@@ -37,7 +37,14 @@
 					{
 						"name": "SET_TRIGGER_VARIABLE",
 						"type": "SetVariable",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "LKUP_JOB_DETAILS",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"secureOutput": false,
 							"secureInput": false
@@ -45,9 +52,41 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "Trigger_variable",
-							"value": {
-								"value": "@if(equals(pipeline().parameters.Trigger, null), pipeline().TriggerName, pipeline().parameters.Trigger)",
-								"type": "Expression"
+							"value": "[[object Object]"
+						}
+					},
+					{
+						"name": "LKUP_JOB_DETAILS",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[vb_get_job_dtls]",
+								"storedProcedureParameters": {
+									"TriggerName": {
+										"type": "String",
+										"value": {
+											"value": "@variables('Trigger_variable')",
+											"type": "Expression"
+										}
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_AZSQLDB_METADATA",
+								"type": "DatasetReference",
+								"parameters": {}
 							}
 						}
 					}
@@ -68,7 +107,9 @@
 				"annotations": [],
 				"lastPublishTime": "2026-10-15T02:01:40Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_AZSQLDB_METADATA')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/DS_AZSQLDB_METADATA')]",
