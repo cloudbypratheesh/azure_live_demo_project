@@ -1,0 +1,13 @@
+{
+	"name": "ds_sqlserverexceldetails",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_sqlserverexceldetails",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
